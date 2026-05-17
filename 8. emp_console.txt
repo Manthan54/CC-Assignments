@@ -94,3 +94,8 @@ public class EmployeeManagement {
         System.debug('Employee Deleted Successfully');
     }
 }
+
+
+
+
+EmployeeManagement.insertEmployee('101', 'Manthan', 'abc@gmail.com', Date.newInstance(2006, 5, 24), 'IT');
