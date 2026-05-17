@@ -1,0 +1,239 @@
+public class StudentController {
+
+    // Current student
+    public Student__c stu {get; set;}
+
+    // List of students
+    public List<Student__c> stuList {get; set;}
+
+    // Selected Id
+    public Id selectedId {get; set;}
+
+    // Constructor
+    public StudentController() {
+
+        stu = new Student__c();
+
+        loadStudents();
+    }
+
+    // Load all students
+    public void loadStudents() {
+
+        stuList = [
+            SELECT Id,
+                   Name,
+                   Roll_No__c,
+                   Class__c,
+                   Mobile_No__c
+            FROM Student__c
+            ORDER BY CreatedDate DESC
+        ];
+    }
+
+    // INSERT
+    public void insertStudent() {
+
+        insert stu;
+
+        stu = new Student__c();
+
+        loadStudents();
+    }
+
+    // EDIT
+    public void editStudent() {
+
+        stu = [
+            SELECT Id,
+                   Name,
+                   Roll_No__c,
+                   Class__c,
+                   Mobile_No__c
+            FROM Student__c
+            WHERE Id = :selectedId
+        ];
+    }
+
+    // UPDATE
+    public void updateStudent() {
+
+        update stu;
+
+        stu = new Student__c();
+
+        loadStudents();
+    }
+
+    // DELETE  (simple and same as product logic)
+    public void deleteStudent() {
+
+        Student__c s = [
+            SELECT Id
+            FROM Student__c
+            WHERE Id = :selectedId
+        ];
+
+        delete s;
+
+        loadStudents();
+    }
+}
+
+
+
+
+<apex:page controller="StudentController">
+
+<style>
+
+/* Background */
+body {
+    background-color: #eef2f7;
+    font-family: Arial;
+}
+
+/* Header */
+.headerBox {
+    background-color: #2c3e50;
+    color: white;
+    padding: 12px;
+    font-size: 22px;
+    font-weight: bold;
+    text-align: center;
+    border-radius: 8px;
+    margin-bottom: 15px;
+}
+
+/* Card Layout */
+.card {
+    background-color: white;
+    padding: 18px;
+    margin-bottom: 20px;
+    border-radius: 10px;
+}
+
+/* Title */
+.titleText {
+    font-size: 18px;
+    font-weight: bold;
+    margin-bottom: 10px;
+    color: #2c3e50;
+}
+
+</style>
+
+<apex:form >
+
+<div class="headerBox">
+Student Record Management System
+</div>
+
+<apex:pageBlock title="Student Management">
+
+<!-- FORM -->
+
+<div class="card">
+
+<div class="titleText">
+Add / Update Student
+</div>
+
+<apex:pageBlockSection columns="2">
+
+<apex:inputText label="Student Name"
+    value="{!stu.Name}" />
+
+<apex:inputText label="Roll No"
+    value="{!stu.Roll_No__c}" />
+
+<apex:inputText label="Class"
+    value="{!stu.Class__c}" />
+
+<apex:inputField value="{!stu.Mobile_No__c}" />
+
+</apex:pageBlockSection>
+
+<apex:pageBlockButtons location="top">
+
+<apex:commandButton value="Insert Student"
+    action="{!insertStudent}"
+    rerender="table"/>
+
+<apex:commandButton value="Update Student"
+    action="{!updateStudent}"
+    rerender="table"/>
+
+</apex:pageBlockButtons>
+
+</div>
+
+<!-- TABLE -->
+
+<div class="card">
+
+<div class="titleText">
+Student List
+</div>
+
+<apex:pageBlockTable value="{!stuList}"
+        var="s"
+        id="table">
+
+<apex:column headerValue="Name">
+{!s.Name}
+</apex:column>
+
+<apex:column headerValue="Roll No">
+{!s.Roll_No__c}
+</apex:column>
+
+<apex:column headerValue="Class">
+{!s.Class__c}
+</apex:column>
+
+<apex:column headerValue="Mobile No">
+{!s.Mobile_No__c}
+</apex:column>
+
+<!-- EDIT -->
+
+<apex:column headerValue="Edit">
+
+<apex:commandButton value="Edit"
+    action="{!editStudent}"
+    rerender="table">
+
+<apex:param name="sid"
+    value="{!s.Id}"
+    assignTo="{!selectedId}" />
+
+</apex:commandButton>
+
+</apex:column>
+
+<!-- DELETE (NO CONFIRM) -->
+
+<apex:column headerValue="Delete">
+
+<apex:commandButton value="Delete"
+    action="{!deleteStudent}"
+    rerender="table">
+
+<apex:param name="sid"
+    value="{!s.Id}"
+    assignTo="{!selectedId}" />
+
+</apex:commandButton>
+
+</apex:column>
+
+</apex:pageBlockTable>
+
+</div>
+
+</apex:pageBlock>
+
+</apex:form>
+
+</apex:page>

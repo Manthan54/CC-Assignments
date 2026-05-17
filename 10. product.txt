@@ -1,0 +1,238 @@
+public class ProductController {
+
+    // Current product
+    public Product__c prod {get; set;}
+
+    // Product list
+    public List<Product__c> prodList {get; set;}
+
+    // Store selected record Id
+    public Id selectedId {get; set;}
+
+    // Constructor
+    public ProductController() {
+
+        prod = new Product__c();
+
+        loadProducts();
+    }
+
+    // Load records
+    public void loadProducts() {
+
+        prodList = [
+            SELECT Id,
+                   Name,
+                   Serial_No__c,
+                   Manufacture_Date__c,
+                   Expiry_Date__c
+            FROM Product__c
+            ORDER BY CreatedDate DESC
+        ];
+    }
+
+    // INSERT
+    public void insertProduct() {
+
+        insert prod;
+
+        prod = new Product__c();
+
+        loadProducts();
+    }
+
+    // EDIT
+    public void editProduct() {
+
+        prod = [
+            SELECT Id,
+                   Name,
+                   Serial_No__c,
+                   Manufacture_Date__c,
+                   Expiry_Date__c
+            FROM Product__c
+            WHERE Id = :selectedId
+        ];
+    }
+
+    // UPDATE
+    public void updateProduct() {
+
+        update prod;
+
+        prod = new Product__c();
+
+        loadProducts();
+    }
+
+    // DELETE
+    public void deleteProduct() {
+
+        Product__c p = [
+            SELECT Id
+            FROM Product__c
+            WHERE Id = :selectedId
+        ];
+
+        delete p;
+
+        loadProducts();
+    }
+}
+
+
+
+<apex:page controller="ProductController">
+
+<style>
+
+/* Page background */
+body {
+    background-color: #f4f6f9;
+}
+
+/* Section headers */
+.sectionTitle {
+    font-size: 18px;
+    font-weight: bold;
+    color: #2c3e50;
+    margin-bottom: 10px;
+}
+
+/* Form container */
+.formBox {
+    background-color: white;
+    padding: 15px;
+    border-radius: 8px;
+    margin-bottom: 20px;
+}
+
+/* Table container */
+.tableBox {
+    background-color: white;
+    padding: 15px;
+    border-radius: 8px;
+}
+
+/* Buttons spacing */
+.buttonSpace {
+    margin-top: 10px;
+}
+
+</style>
+
+<apex:form >
+
+<apex:pageBlock title="Product Inventory Management">
+
+<!-- ============================= -->
+<!-- PRODUCT ENTRY FORM -->
+<!-- ============================= -->
+
+<div class="formBox">
+
+<div class="sectionTitle">
+Add / Update Product
+</div>
+
+<apex:pageBlockSection columns="2">
+
+<apex:inputText label="Product Name"
+    value="{!prod.Name}" />
+
+<apex:inputText label="Serial No"
+    value="{!prod.Serial_No__c}" />
+
+<apex:inputField value="{!prod.Manufacture_Date__c}" />
+
+<apex:inputField value="{!prod.Expiry_Date__c}" />
+
+</apex:pageBlockSection>
+
+<!-- Buttons (ONLY TOP NOW) -->
+
+<apex:pageBlockButtons location="top">
+
+<apex:commandButton value="Insert Product"
+    action="{!insertProduct}"
+    rerender="table"/>
+
+<apex:commandButton value="Update Product"
+    action="{!updateProduct}"
+    rerender="table"/>
+
+</apex:pageBlockButtons>
+
+</div>
+
+<!-- ============================= -->
+<!-- PRODUCT TABLE -->
+<!-- ============================= -->
+
+<div class="tableBox">
+
+<div class="sectionTitle">
+Product List
+</div>
+
+<apex:pageBlockTable value="{!prodList}"
+        var="p"
+        id="table">
+
+<apex:column headerValue="Product Name">
+{!p.Name}
+</apex:column>
+
+<apex:column headerValue="Serial No">
+{!p.Serial_No__c}
+</apex:column>
+
+<apex:column headerValue="Manufacture Date">
+{!p.Manufacture_Date__c}
+</apex:column>
+
+<apex:column headerValue="Expiry Date">
+{!p.Expiry_Date__c}
+</apex:column>
+
+<!-- EDIT BUTTON -->
+
+<apex:column headerValue="Edit">
+
+<apex:commandButton value="Edit"
+    action="{!editProduct}"
+    rerender="table">
+
+<apex:param name="pid"
+    value="{!p.Id}"
+    assignTo="{!selectedId}" />
+
+</apex:commandButton>
+
+</apex:column>
+
+<!-- DELETE BUTTON -->
+
+<apex:column headerValue="Delete">
+
+<apex:commandButton value="Delete"
+    action="{!deleteProduct}"
+    rerender="table">
+
+<apex:param name="pid"
+    value="{!p.Id}"
+    assignTo="{!selectedId}" />
+
+</apex:commandButton>
+
+</apex:column>
+
+</apex:pageBlockTable>
+
+</div>
+
+</apex:pageBlock>
+
+</apex:form>
+
+</apex:page>

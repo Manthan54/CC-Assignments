@@ -1,0 +1,74 @@
+public class EmailSenderDemo {
+
+    // Method WITHOUT attachment
+    public static void sendEmailWithoutAttachment() {
+
+        Messaging.SingleEmailMessage mail = new Messaging.SingleEmailMessage();
+
+        // Recipient
+        mail.setToAddresses(
+            new String[] {'receiver@example.com'}
+        );
+
+        // Subject
+        mail.setSubject('Test Email From Salesforce');
+
+        // Body
+        mail.setPlainTextBody('Hello, this is a test email sent from Apex.');
+
+        // Send email
+        Messaging.sendEmail(
+            new Messaging.SingleEmailMessage[] { mail }
+        );
+
+        System.debug('Email sent without attachment.');
+    }
+
+
+    // Method WITH attachment
+    public static void sendEmailWithAttachment() {
+
+        Messaging.SingleEmailMessage mail = new Messaging.SingleEmailMessage();
+
+        // Recipient
+        mail.setToAddresses(
+            new String[] {'receiver@example.com'}
+        );
+
+        // Subject
+        mail.setSubject('Email With Attachment');
+
+        // Body
+        mail.setPlainTextBody('Hello, this email contains an attachment.');
+
+
+
+        // Create attachment
+        Messaging.EmailFileAttachment attachment =
+            new Messaging.EmailFileAttachment();
+
+        attachment.setFileName('sample.txt');
+
+        attachment.setBody(
+            Blob.valueOf('This is the attachment content.')
+        );
+
+        attachment.setContentType('text/plain');
+
+
+
+        // Attach file
+        mail.setFileAttachments(
+            new Messaging.EmailFileAttachment[] { attachment }
+        );
+
+
+
+        // Send email
+        Messaging.sendEmail(
+            new Messaging.SingleEmailMessage[] { mail }
+        );
+
+        System.debug('Email sent with attachment.');
+    }
+}

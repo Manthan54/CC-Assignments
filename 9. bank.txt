@@ -1,0 +1,98 @@
+public class BankAccountManagement {
+
+    // INSERT ACCOUNT
+    public static void createAccount(
+        String accNo,
+        String custName,
+        Decimal balance,
+        String accType
+    ) {
+
+        Bank_Account__c b = new Bank_Account__c();
+
+        b.Name = accNo;
+        b.Customer_Name__c = custName;
+        b.Balance__c = balance;
+        b.Account_Type__c = accType;
+
+        insert b;
+
+        System.debug('Account Created Successfully');
+    }
+
+
+
+    // DISPLAY ACCOUNTS
+    public static void displayAccounts() {
+
+        List<Bank_Account__c> accList = [
+
+            SELECT Id,
+                   Name,
+                   Customer_Name__c,
+                   Balance__c,
+                   Account_Type__c
+
+            FROM Bank_Account__c
+        ];
+
+        System.debug('----- ACCOUNT LIST -----');
+
+        for(Bank_Account__c b : accList) {
+
+            System.debug(
+                'Account No: ' + b.Name +
+                ' | Customer: ' + b.Customer_Name__c +
+                ' | Balance: ' + b.Balance__c +
+                ' | Type: ' + b.Account_Type__c
+            );
+        }
+    }
+
+
+
+    // UPDATE BALANCE
+    public static void updateBalance(
+        String accNo,
+        Decimal newBalance
+    ) {
+
+        Bank_Account__c b = [
+
+            SELECT Id,
+                   Balance__c
+
+            FROM Bank_Account__c
+            WHERE Name = :accNo
+            LIMIT 1
+        ];
+
+        b.Balance__c = newBalance;
+
+        update b;
+
+        System.debug('Balance Updated Successfully');
+    }
+
+
+
+    // DELETE ACCOUNT
+    public static void deleteAccount(
+        String accNo
+    ) {
+
+        Bank_Account__c b = [
+
+            SELECT Id
+
+            FROM Bank_Account__c
+            WHERE Name = :accNo
+            LIMIT 1
+        ];
+
+        delete b;
+
+        System.debug('Account Deleted Successfully');
+    }
+
+}

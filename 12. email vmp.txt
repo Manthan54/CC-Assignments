@@ -1,0 +1,127 @@
+public class EmailController {
+
+    public String recipient {get; set;}
+    public String subject {get; set;}
+    public String body {get; set;}
+
+    // Method to send email
+    public void sendEmail() {
+
+        // Simple email validation
+        if(recipient == null || !recipient.contains('@'))
+        {
+            ApexPages.addMessage(
+                new ApexPages.Message(
+                    ApexPages.Severity.ERROR,
+                    'Invalid Email Address'
+                )
+            );
+
+            return;
+        }
+
+
+
+        Messaging.SingleEmailMessage mail =
+            new Messaging.SingleEmailMessage();
+
+        mail.setToAddresses(
+            new String[] {recipient}
+        );
+
+        mail.setSubject(subject);
+
+        mail.setPlainTextBody(body);
+
+
+
+        // OPTIONAL ATTACHMENT
+        Messaging.EmailFileAttachment attach =
+            new Messaging.EmailFileAttachment();
+
+        attach.setFileName('sample.txt');
+
+        attach.setBody(
+            Blob.valueOf('This is sample attachment')
+        );
+
+        attach.setContentType('text/plain');
+
+
+
+        mail.setFileAttachments(
+            new Messaging.EmailFileAttachment[] {attach}
+        );
+
+
+
+        // Send email
+        Messaging.sendEmail(
+            new Messaging.SingleEmailMessage[] {mail}
+        );
+
+
+
+        ApexPages.addMessage(
+            new ApexPages.Message(
+                ApexPages.Severity.CONFIRM,
+                'Email Sent Successfully'
+            )
+        );
+    }
+}
+
+
+
+
+
+
+
+
+
+
+
+
+<apex:page controller="EmailController">
+
+    <apex:form>
+
+        <apex:pageMessages />
+
+        <apex:pageBlock title="Send Email">
+
+            <apex:pageBlockSection columns="1">
+
+                <apex:inputText
+                    value="{!recipient}"
+                    label="Recipient Email"
+                />
+
+                <apex:inputText
+                    value="{!subject}"
+                    label="Subject"
+                />
+
+                <apex:inputTextarea
+                    value="{!body}"
+                    label="Message Body"
+                />
+
+            </apex:pageBlockSection>
+
+
+
+            <apex:pageBlockButtons>
+
+                <apex:commandButton
+                    value="Send Email"
+                    action="{!sendEmail}"
+                />
+
+            </apex:pageBlockButtons>
+
+        </apex:pageBlock>
+
+    </apex:form>
+
+</apex:page>
